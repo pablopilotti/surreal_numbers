@@ -200,10 +200,10 @@ Fixpoint count_s (s:symbol) : nat :=
   let count_l := (fix count_l (l: list symbol) : nat :=
                   match l with
                     | []   => 0
-                    | s::l => count_s s + count_l l
+                    | s::l => max (count_s s) (count_l l)
                   end) in
   match s with
-  | pair x y  => 1 + (count_l x) + (count_l y) 
+  | pair x y  => 1 + max (count_l x) (count_l y) 
   end.
 
 Lemma p : count_s n1 = count_s n_1. 
