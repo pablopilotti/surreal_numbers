@@ -56,12 +56,12 @@ Proof.
 Qed.
 
 
-Lemma One_is_number: (is_number n1).  Proof. (* unfold is_number. unfold n1. unfold n0. unfold right. *) apply forall_ngeq_r. intros. tauto. Qed.
-Lemma minusOne_is_number: (is_number n_1). Proof. unfold is_number. unfold n_1. unfold n0. unfold left. apply forall_ngeq_l. intros. tauto. Qed.
-Lemma leq_Zero_Zero: leq n0 n0. Proof. unfold n0. apply leq_def. split. unfold left. apply forall_ngeq_l. intros. tauto. unfold right. apply forall_ngeq_r. intros. tauto.  Qed.
-Lemma leq_minusOne_Zero: leq n_1 n0. Proof. unfold n_1. unfold n0. apply leq_def. split. unfold left. apply forall_ngeq_l. intros. tauto. unfold right. apply forall_ngeq_r. intros. tauto.  Qed.
-Lemma leq_Zero_minusOne: (leq n0 n1). Proof. unfold n1. unfold n0. apply leq_def. split. unfold left. apply forall_ngeq_l. intros. tauto. unfold right. apply forall_ngeq_r. intros. tauto.  Qed.
-Lemma leq_minusOne_One: leq n_1 n1. Proof. unfold n_1. unfold n1. unfold n0. apply leq_def. split. unfold left. apply forall_ngeq_l. intros. tauto. unfold right. apply forall_ngeq_r. intros. tauto. Qed.
+Lemma One_is_number: (is_number n1).  Proof. apply forall_ngeq_r. intros. tauto. Qed.
+Lemma minusOne_is_number: (is_number n_1). Proof. apply forall_ngeq_l. intros. tauto. Qed.
+Lemma leq_Zero_Zero: leq n0 n0. Proof. apply leq_def. split. apply forall_ngeq_l. intros. tauto. apply forall_ngeq_r. intros. tauto. Qed.
+Lemma leq_minusOne_Zero: leq n_1 n0. Proof. apply leq_def. split. apply forall_ngeq_l. intros. tauto. apply forall_ngeq_r. intros. tauto. Qed.
+Lemma leq_Zero_minusOne: (leq n0 n1). Proof. apply leq_def. split. apply forall_ngeq_l. intros. tauto. apply forall_ngeq_r. intros. tauto. Qed.
+Lemma leq_minusOne_One: leq n_1 n1. Proof. apply leq_def. split. apply forall_ngeq_l. intros. tauto. apply forall_ngeq_r. intros. tauto. Qed.
 Lemma no_leq_Zero_minusOne: leq n0 n_1->False. Proof. intros. apply (leq_n n0 n0). apply leq_def in H. destruct H. eauto. apply leq_Zero_Zero. Qed.
 
 
@@ -123,6 +123,7 @@ intros.
 exists x.
 tauto.
 Qed.
+
 (* ----------------- Lemas auxiliares -----------------*)
 
 Lemma bad_numbers: forall (X Y Z: symbol), bad_number X Y Z ->
