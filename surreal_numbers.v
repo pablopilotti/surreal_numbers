@@ -3,7 +3,8 @@ Import ListNotations.
 Require Import Classical.
 Require Import Classical_Prop.
 Require Import Init.Logic.
-
+Require Import Coq.Arith.Arith.
+Require Import Coq.micromega.Lia.
 
 (* Definion de Simbolos *)
 Inductive symbol: Type :=
@@ -171,17 +172,30 @@ Qed.
 
 
 (* dia de creacion *)
-Fixpoint count_s (s:symbol) : nat :=
+Fixpoint D (s:symbol) : nat :=
   let count_l := (fix count_l (l: list symbol) : nat :=
                   match l with
                     | []   => 0
-                    | s::l => max (count_s s) (count_l l)
+                    | s::l => max (D s) (count_l l)
                   end) in
   match s with
   | pair x y  => 1 + max (count_l x) (count_l y)
   end.
 
-Lemma p : count_s n1 = count_s n_1.
+Lemma p : D n1 = D n_1.
 Proof.
-unfold n_1, n1, n0. unfold count_s. eauto.
+unfold n_1, n1, n0. eauto.
 Qed.
+
+
+Lemma numbers_lower_limit: forall (X: symbol), D X >=1.
+Proof.
+induction X.
+induction l.
+induction l0.
+{ eauto. }
+{ unfold D;lia. }
+{ unfold D;lia. }
+Qed.
+
+
