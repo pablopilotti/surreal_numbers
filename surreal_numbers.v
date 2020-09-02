@@ -44,8 +44,6 @@ Notation "~ ( x _>=_  y )" := (ngeq x y)
 Axiom leq_n: forall (X: symbol), forall (Y: symbol), ngeq [Y] [X] <-> (leq X Y -> False).
 Axiom ngeq_n: forall (X: symbol), forall (Y: symbol), leq X Y <-> (ngeq [Y] [X] -> False).
 
-Check ngeq_n.
-
 Definition is_number (x: symbol) := ngeq (left x) (right x).
 
 (*Pruebas de que 0, 1 y -1 son numeros y 0 <= 0, *)
@@ -143,26 +141,15 @@ Proof.
     apply leq_def in H0.
     destruct H.
     destruct H0.
-    apply not_forall_ngeq_l in H1 ; last easy.
-    apply not_forall_exists_not_l in H1 ; last easy.
+    apply not_forall_ngeq_l in H1; auto.
+    apply not_forall_exists_not_l in H1 ; auto.
     elim H1.
-    {
-      intros.
-      exists x.
-      intros.
-      split.
-      {
-        apply leq_def.
-        split;  eauto.
-      }
-      {
-        split ; first  (apply ngeq_n ; eauto).
-        unfold not.
-        apply leq_n.
-        rewrite (forall_ngeq_l (left X) [Y]) in H.
-        eauto.
-      }
-    }
+    intros.
+    exists x.
+    intros.
+    split. { apply leq_def. split;  eauto. }
+           { split. { apply ngeq_n. eauto. }
+                    { unfold not. apply leq_n. rewrite (forall_ngeq_l (left X) [Y]) in H. eauto. } }
   }
   {
     right.
@@ -170,19 +157,15 @@ Proof.
     apply leq_def in H0.
     destruct H.
     destruct H0.
-    apply not_forall_ngeq_r in H1 ; last easy.
-    apply not_forall_exists_not_r in H1 ; last easy.
+    apply not_forall_ngeq_r in H1 ; auto.
+    apply not_forall_exists_not_r in H1 ; auto.
     elim H1.
     intros z.
     intros.
     exists z.
     intros.
-    split ; first (apply ngeq_n ; eauto).
-    split ; first (apply leq_def ; eauto).
-    unfold not.
-    apply leq_n.
-    rewrite (forall_ngeq_r [Y] (right Z)) in H3.
-    eauto.
+    split.  {apply ngeq_n. eauto. }
+            { split; [ apply leq_def | unfold not; apply leq_n; rewrite (forall_ngeq_r [Y] (right Z)) in H3]; eauto. } 
   }
 Qed.
 
