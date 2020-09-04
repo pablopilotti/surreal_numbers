@@ -2,9 +2,12 @@ Require Import List.
 Import ListNotations.
 Require Import Classical.
 Require Import Classical_Prop.
-Require Import Init.Logic.
-Require Import Coq.Arith.Arith.
+(*Require Import Init.Logic. 
+Require Import Coq.Arith.PeanoNat. *)
+Require Import Arith.
+Require Import Arith.Max.
 Require Import Coq.micromega.Lia.
+Require Import Coq.Structures.GenericMinMax.
 
 (* Definion de Simbolos *)
 Inductive symbol: Type :=
@@ -22,9 +25,40 @@ match s with
 end.
 
 (* Ejemplo de Simbolos *)
+
+(* Dia 1 *)
 Definition n0 := ([],[]).
+(* Dia 2 *)
 Definition n_1 := ([],[n0]).
 Definition n1 := ([n0],[]).
+
+(* Dia N *)
+Definition na := ([n_1],[]).
+Definition nb  := ([n0],[]).
+Definition nc  := ([n1],[]).
+
+Definition nd := (n_1::[n0],[]).
+Definition ne := (n_1::[n1],[]).
+Definition nf  := (n0::[n1],[]).
+Definition ng  := (n_1::n0::[n1],[]).
+
+Definition nh := ([], [n_1]).
+Definition ni  := ([], [n0]).
+Definition nj  := ([], [n1]).
+
+Definition nk := ([], n_1::[n0]).
+Definition nl := ([], n_1::[n1]).
+Definition nm  := ([], n0::[n1]).
+Definition nn  := ([], n_1::n0::[n1]).
+
+Definition no := ([n_1], [n0]).
+Definition np := ([n0],[n1]).
+Definition nq := ([n_1],[n1]).
+Definition nr  := (n_1::[n0], [n1]).
+Definition ns  := ([n_1], n0::[n1]).
+
+Definition nums:= n0::n1::n_1::na::nb::nc::nd::ne::nf::ng::nh::ni::nj::nk::nl::nm::nn::
+                  no::np::nq::nr::ns::[].
 
 (* Definicion de: No es mayor o igual *)
 Axiom ngeq: list symbol-> list symbol -> Prop.
@@ -34,6 +68,7 @@ Axiom forall_ngeq_l: forall (X Y: list symbol), ngeq X Y <-> forall (x: symbol),
 (* Definicion de: Es menor o igual *)
 Axiom leq: symbol-> symbol -> Prop.
 Axiom leq_def: forall (X: symbol), forall (Y: symbol), (ngeq (left X) [Y] /\ ngeq [X] (right Y)) <-> leq X Y.
+
 
 (* TODO mejorar la notacion *)
 Notation "x _<=_ y" := (leq x y)
@@ -54,7 +89,6 @@ Proof.
   apply forall_ngeq_l. intros. tauto.
 Qed.
 
-
 Lemma One_is_number: (is_number n1).  Proof. apply forall_ngeq_r. intros. tauto. Qed.
 Lemma minusOne_is_number: (is_number n_1). Proof. apply forall_ngeq_l. intros. tauto. Qed.
 Lemma leq_Zero_Zero: leq n0 n0. Proof. apply leq_def. split. apply forall_ngeq_l. intros. tauto. apply forall_ngeq_r. intros. tauto. Qed.
@@ -63,6 +97,74 @@ Lemma leq_Zero_minusOne: (leq n0 n1). Proof. apply leq_def. split. apply forall_
 Lemma leq_minusOne_One: leq n_1 n1. Proof. apply leq_def. split. apply forall_ngeq_l. intros. tauto. apply forall_ngeq_r. intros. tauto. Qed.
 Lemma no_leq_Zero_minusOne: leq n0 n_1->False. Proof. intros. apply (leq_n n0 n0). apply leq_def in H. destruct H. eauto. apply leq_Zero_Zero. Qed.
 
+Lemma all_number: forall (X: symbol), In X nums -> is_number X.
+Proof.
+unfold nums.
+intro X.
+intro H;elim H.
+intro H0; rewrite <- H0; apply forall_ngeq_l; intros; tauto.
+clear H;intro H;elim H.
+intro H0; rewrite <- H0; apply forall_ngeq_r; intros; tauto.
+clear H;intro H;elim H.
+intro H0; rewrite <- H0; apply forall_ngeq_l; intros; tauto.
+clear H;intro H;elim H.
+intro H0; rewrite <- H0; apply forall_ngeq_r; intros; tauto.
+clear H;intro H;elim H.
+intro H0; rewrite <- H0; apply forall_ngeq_r; intros; tauto.
+clear H;intro H;elim H.
+intro H0; rewrite <- H0; apply forall_ngeq_r; intros; tauto.
+clear H;intro H;elim H.
+intro H0; rewrite <- H0; apply forall_ngeq_r; intros; tauto.
+clear H;intro H;elim H.
+intro H0; rewrite <- H0; apply forall_ngeq_r; intros; tauto.
+clear H;intro H;elim H.
+intro H0; rewrite <- H0; apply forall_ngeq_r; intros; tauto.
+clear H;intro H;elim H.
+intro H0; rewrite <- H0; apply forall_ngeq_r; intros; tauto.
+clear H;intro H;elim H.
+intro H0; rewrite <- H0; apply forall_ngeq_l; intros; tauto.
+clear H;intro H;elim H.
+intro H0; rewrite <- H0; apply forall_ngeq_l; intros; tauto.
+clear H;intro H;elim H.
+intro H0; rewrite <- H0; apply forall_ngeq_l; intros; tauto.
+clear H;intro H;elim H.
+intro H0; rewrite <- H0; apply forall_ngeq_l; intros; tauto.
+clear H;intro H;elim H.
+intro H0; rewrite <- H0; apply forall_ngeq_l; intros; tauto.
+clear H;intro H;elim H.
+intro H0; rewrite <- H0; apply forall_ngeq_l; intros; tauto.
+clear H;intro H;elim H.
+intro H0; rewrite <- H0; apply forall_ngeq_l; intros; tauto.
+clear H;intro H;elim H.
+  intro H0; rewrite <- H0; apply forall_ngeq_r; unfold no; simpl; intros; elim H1. 
+  intros; rewrite <- H2; apply leq_n; apply no_leq_Zero_minusOne; tauto.
+  tauto.
+clear H;intro H;elim H.
+  intro H0; rewrite <- H0; apply forall_ngeq_r; unfold np; simpl; intros; elim H1.
+  intros; rewrite <- H2; apply leq_n; unfold n1; unfold n0; intros; apply leq_def in H3;
+  unfold left in H3; unfold right in H3; destruct H3; apply leq_n in H3. tauto. apply leq_Zero_Zero.
+  intros; tauto. 
+clear H;intro H;elim H.
+  intro H0; rewrite <- H0; apply forall_ngeq_r; unfold nq; simpl; intros; elim H1.
+  intros; rewrite <- H2; apply leq_n; unfold n1; unfold n_1; unfold n0; intros; apply leq_def in H3;
+  unfold left in H3; unfold right in H3; destruct H3; apply leq_n in H3. tauto. apply leq_minusOne_Zero.
+  intros; tauto. 
+clear H;intro H;elim H.
+  intro H0. rewrite <- H0. unfold nr.
+  unfold is_number. unfold right. unfold left. apply forall_ngeq_l. intros.
+  elim H1. intros. rewrite <-H2. apply leq_n. intros. apply leq_def in H3.
+  destruct H3. simpl in H3. simpl in H4. apply leq_n in H3. tauto. apply leq_minusOne_Zero.
+  intros. elim H2. intros. rewrite <-H3. apply leq_n. intros. apply leq_def in H4.
+  destruct H4. simpl in H4. apply leq_n in H4. tauto. apply leq_Zero_Zero. intros. elim H3.
+clear H;intro H;elim H.
+  intro H0. rewrite <- H0. unfold ns.
+  unfold is_number. unfold right. unfold left. apply forall_ngeq_r. intros.
+  elim H1. intros. rewrite <-H2. apply leq_n. intros. apply leq_def in H3.
+  destruct H3. simpl in H3. simpl in H4. apply leq_n in H4. tauto. apply leq_Zero_Zero.
+  intros. elim H2. intros. rewrite <-H3. apply leq_n. intros. apply leq_def in H4.
+  destruct H4. simpl in H4. apply leq_n in H4. tauto. apply leq_minusOne_Zero. intros. elim H3.
+intros. elim H0.
+Qed.
 
 Definition bad_number(X Y Z: symbol):= leq X Y /\ leq Y Z /\ ~leq X Z.
 
@@ -170,32 +272,155 @@ Proof.
   }
 Qed.
 
+Print fold_right.
 
-(* dia de creacion *)
-Fixpoint D (s:symbol) : nat :=
-  let count_l := (fix count_l (l: list symbol) : nat :=
-                  match l with
-                    | []   => 0
-                    | s::l => max (D s) (count_l l)
-                  end) in
-  match s with
-  | pair x y  => 1 + max (count_l x) (count_l y)
-  end.
+(**Mas numeros **)
 
-Lemma p : D n1 = D n_1.
+Fixpoint D (s:symbol) (n:nat): nat := 1 + max n (max (fold_right (D) 0 (left s)) (fold_right (D) 0 (right s))).
+
+Definition Dx (l: list symbol) : nat := fold_right (D) 0 l.
+
+
+
+
+Lemma one_number_lower_limit: forall (X: symbol)(n :nat), D X n >=1.
 Proof.
-unfold n_1, n1, n0. eauto.
+induction X;induction l;induction l0; induction n;simpl;lia.
+Qed.
+
+Lemma three_numbers_lower_limit: forall (X Y Z: symbol), D X 0 + D Y 0 + D Z 0 >=3.
+Proof.
+intros.
+elim (one_number_lower_limit X); [elim (one_number_lower_limit Y); [elim (one_number_lower_limit Z) | ] | ]; lia.
 Qed.
 
 
-Lemma numbers_lower_limit: forall (X: symbol), D X >=1.
+Lemma aux: forall (X: symbol) (n :nat), D X n = max (S n) (D X 0).
 Proof.
+intros.
 induction X.
-induction l.
-induction l0.
-{ eauto. }
-{ unfold D;lia. }
-{ unfold D;lia. }
+induction l;induction l0;simpl;lia.
 Qed.
 
+Lemma aux3: forall (X: symbol), D X 0 =  max (S(Dx (left X))) (S(Dx (right X))).
+Proof.
+intros.
+induction X.
+induction l;induction l0;tauto.
+Qed.
+
+Lemma aux4: forall (X: symbol) (n :nat), D X n =  ( max (S(n)) ((( max (S(Dx (left X))) (S(Dx (right X))))))).
+Proof.
+intros.
+induction X.
+induction l;induction l0;induction n;unfold left; unfold right; simpl; tauto.
+Qed.
+
+Lemma aux5: forall (X: symbol) (n :nat), D X n >= D X 0.
+Proof.
+intros.
+induction n.
+elim one_number_lower_limit; auto.
+rewrite aux4.
+rewrite aux3.
+lia.
+Qed.
+
+Lemma aux6: forall (X: symbol) (n :nat), (D X n) =  (S( max n ( max (Dx (left X)) (Dx (right X))))).
+Proof.
+intros.
+induction X.
+induction l;induction l0;induction n;unfold left; unfold right; simpl; tauto.
+Qed.
+
+Lemma smax: forall (n1 n2: nat), max (S n1) n2 >= max n1 n2.
+Proof.
+intros.
+lia.
+Qed.
+
+Lemma auxn_l: forall (X x: symbol), In x (left X) -> D X 0 > D x 0.
+Proof.
+intros.
+induction X.
+unfold left in H.
+induction l.
+elim H.
+elim H.
+intros.
+rewrite H0.
+rewrite aux4.
+unfold left.
+simpl.
+elim aux5.
+lia.
+intros.
+lia.
+intros.
+apply IHl in H0.
+rewrite aux6.
+unfold right.
+unfold left.
+simpl.
+rewrite aux.
+rewrite aux6 in H0.
+simpl in H0.
+lia.
+Qed.
+
+Lemma auxn_r: forall (X x: symbol), In x (right X) -> D X 0 > D x 0.
+Proof.
+intros.
+induction X.
+unfold right in H.
+induction l0.
+elim H.
+elim H.
+intros.
+rewrite H0.
+
+rewrite aux4.
+unfold left.
+simpl.
+elim aux5.
+lia.
+intros.
+lia.
+intros.
+apply IHl0 in H0.
+rewrite aux6.
+unfold right.
+unfold left.
+simpl.
+
+rewrite aux.
+
+rewrite aux6 in H0.
+simpl in H0.
+lia.
+Qed.
+
+
+Lemma bad_numbers_dec: forall (X Y Z: symbol) (n :nat), bad_number X Y Z -> D X 0 + D Y 0 + D Z 0= n ->
+               ((exists x : symbol, In x (left X) -> bad_number Y Z x /\ D x 0+ D Y 0+ D Z 0 < n ) \/
+               ((exists z : symbol, In z (right Z) ->bad_number z X Y /\ D z 0+ D Y 0+ D X 0 < n))).
+Proof.
+intros.
+apply bad_numbers in H.
+elim H; intros.
+left.
+elim H1;intros.
+exists x.
+split.
+tauto.
+apply auxn_l in H3.
+lia.
+right.
+elim H1;intros.
+exists x.
+split.
+tauto.
+apply auxn_r in H3.
+lia.
+Qed.
 
