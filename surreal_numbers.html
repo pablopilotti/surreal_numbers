@@ -171,10 +171,11 @@ Numbers: Day 2
 <div class="doc">
 <a id="lab4"></a><h1 class="section">Chapter 4: Bad Numbers</h1>
 
+<div class="paragraph"> </div>
+
+ Numbers: Day 3 
 </div>
 <div class="code">
-
-<br/>
 <span class="id" title="keyword">Definition</span> <span class="id" title="var">na</span> := ([<span class="id" title="var">n_1</span>],[]).<br/>
 <span class="id" title="keyword">Definition</span> <span class="id" title="var">nb</span> := ([<span class="id" title="var">n0</span>],[]).<br/>
 <span class="id" title="keyword">Definition</span> <span class="id" title="var">nc</span> := ([<span class="id" title="var">n1</span>],[]).<br/>
@@ -257,67 +258,13 @@ Numbers: Day 2
 <br/>
 
 <br/>
-<span class="id" title="keyword">Lemma</span> <span class="id" title="var">not_leq_to_or</span>: <span class="id" title="keyword">forall</span> (<span class="id" title="var">X</span> <span class="id" title="var">Y</span>: <span class="id" title="var">symbol</span>), (<span class="id" title="var">leq</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> -&gt; <span class="id" title="var">False</span>) -&gt; ((<span class="id" title="var">ngeq</span> (<span class="id" title="tactic">left</span> <span class="id" title="var">X</span>) [<span class="id" title="var">Y</span>]-&gt; <span class="id" title="var">False</span>) \/ (<span class="id" title="var">ngeq</span> [<span class="id" title="var">X</span>] (<span class="id" title="tactic">right</span> <span class="id" title="var">Y</span>) -&gt;<span class="id" title="var">False</span>)).<br/>
-<span class="id" title="keyword">Proof</span>.<br/>
-<span class="id" title="tactic">intros</span>.<br/>
-<span class="id" title="tactic">elim</span> (<span class="id" title="var">classic</span> ((<span class="id" title="var">ngeq</span> (<span class="id" title="tactic">left</span> <span class="id" title="var">X</span>) [<span class="id" title="var">Y</span>] /\ <span class="id" title="var">ngeq</span> [<span class="id" title="var">X</span>] (<span class="id" title="tactic">right</span> <span class="id" title="var">Y</span>)))) ; [ <span class="id" title="tactic">intros</span> ; <span class="id" title="tactic">apply</span> <span class="id" title="var">leq_def</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H0</span> |] ; <span class="id" title="tactic">tauto</span>.<br/>
-<span class="id" title="keyword">Qed</span>.<br/>
+</div>
 
-<br/>
-<span class="id" title="keyword">Theorem</span> <span class="id" title="var">not_iff_compat</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Prop</span>,<br/>
-&nbsp;&nbsp;(<span class="id" title="var">A</span> &lt;-&gt; <span class="id" title="var">B</span>) -&gt; (~ <span class="id" title="var">A</span> &lt;-&gt; ~<span class="id" title="var">B</span>).<br/>
-<span class="id" title="keyword">Proof</span>.<br/>
-<span class="id" title="tactic">tauto</span>.<br/>
-<span class="id" title="keyword">Qed</span>.<br/>
-
-<br/>
-<span class="id" title="keyword">Lemma</span> <span class="id" title="var">not_forall_ngeq_l</span>: <span class="id" title="keyword">forall</span> (<span class="id" title="var">x</span> <span class="id" title="var">Y</span>: <span class="id" title="var">symbol</span>),<span class="id" title="keyword">forall</span> (<span class="id" title="var">X</span>: <span class="id" title="var">list</span> <span class="id" title="var">symbol</span>), (~ <span class="id" title="var">ngeq</span> <span class="id" title="var">X</span> [<span class="id" title="var">Y</span>]) &lt;-&gt;  ((~ <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> : <span class="id" title="var">symbol</span>, (<span class="id" title="var">In</span> <span class="id" title="var">x</span> <span class="id" title="var">X</span> -&gt; <span class="id" title="var">ngeq</span> [<span class="id" title="var">x</span>] [<span class="id" title="var">Y</span>]))).<br/>
-<span class="id" title="keyword">Proof</span>.<br/>
-<span class="id" title="tactic">intros</span>.<br/>
-<span class="id" title="tactic">apply</span> <span class="id" title="var">not_iff_compat</span>.<br/>
-<span class="id" title="tactic">apply</span> <span class="id" title="var">forall_ngeq_l</span>.<br/>
-<span class="id" title="keyword">Qed</span>.<br/>
-
-<br/>
-<span class="id" title="keyword">Lemma</span> <span class="id" title="var">not_forall_exists_not_l</span>: <span class="id" title="keyword">forall</span> (<span class="id" title="var">x</span> <span class="id" title="var">Y</span>: <span class="id" title="var">symbol</span>),<span class="id" title="keyword">forall</span> (<span class="id" title="var">X</span>: <span class="id" title="var">list</span> <span class="id" title="var">symbol</span>),<br/>
-&nbsp;((~ <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> : <span class="id" title="var">symbol</span>, <span class="id" title="var">In</span> <span class="id" title="var">x</span> <span class="id" title="var">X</span> -&gt; <span class="id" title="var">ngeq</span> [<span class="id" title="var">x</span>] [<span class="id" title="var">Y</span>])) -&gt;<br/>
-&nbsp;((<span class="id" title="tactic">exists</span> <span class="id" title="var">x</span> : <span class="id" title="var">symbol</span>, <span class="id" title="var">In</span> <span class="id" title="var">x</span> <span class="id" title="var">X</span> /\ (<span class="id" title="var">ngeq</span> [<span class="id" title="var">x</span>] [<span class="id" title="var">Y</span>]-&gt;<span class="id" title="var">False</span>))).<br/>
-<span class="id" title="keyword">Proof</span>.<br/>
-<span class="id" title="tactic">intros</span>.<br/>
-<span class="id" title="tactic">apply</span> <span class="id" title="var">not_all_ex_not</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>.<br/>
-<span class="id" title="tactic">unfold</span> <span class="id" title="var">not</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>.<br/>
-<span class="id" title="tactic">elim</span> <span class="id" title="var">H</span>.<br/>
-<span class="id" title="tactic">intros</span>.<br/>
-<span class="id" title="tactic">exists</span> <span class="id" title="var">x0</span>.<br/>
-<span class="id" title="tactic">tauto</span>.<br/>
-<span class="id" title="keyword">Qed</span>.<br/>
-
-<br/>
-<span class="id" title="keyword">Lemma</span> <span class="id" title="var">not_forall_ngeq_r</span>: <span class="id" title="keyword">forall</span> (<span class="id" title="var">y</span> <span class="id" title="var">X</span>: <span class="id" title="var">symbol</span>),<span class="id" title="keyword">forall</span> (<span class="id" title="var">Y</span>: <span class="id" title="var">list</span> <span class="id" title="var">symbol</span>), (~ <span class="id" title="var">ngeq</span> [<span class="id" title="var">X</span>] <span class="id" title="var">Y</span>) &lt;-&gt;  ((~ <span class="id" title="keyword">forall</span> <span class="id" title="var">y</span> : <span class="id" title="var">symbol</span>, (<span class="id" title="var">In</span> <span class="id" title="var">y</span> <span class="id" title="var">Y</span> -&gt; <span class="id" title="var">ngeq</span> [<span class="id" title="var">X</span>] [<span class="id" title="var">y</span>]))).<br/>
-<span class="id" title="keyword">Proof</span>.<br/>
-<span class="id" title="tactic">intros</span>.<br/>
-<span class="id" title="tactic">apply</span> <span class="id" title="var">not_iff_compat</span>.<br/>
-<span class="id" title="tactic">apply</span> <span class="id" title="var">forall_ngeq_r</span>.<br/>
-<span class="id" title="keyword">Qed</span>.<br/>
-
-<br/>
-<span class="id" title="keyword">Lemma</span> <span class="id" title="var">not_forall_exists_not_r</span>: <span class="id" title="keyword">forall</span> (<span class="id" title="var">y</span> <span class="id" title="var">X</span>: <span class="id" title="var">symbol</span>),<span class="id" title="keyword">forall</span> (<span class="id" title="var">Y</span>: <span class="id" title="var">list</span> <span class="id" title="var">symbol</span>),<br/>
-&nbsp;((~ <span class="id" title="keyword">forall</span> <span class="id" title="var">y</span> : <span class="id" title="var">symbol</span>, <span class="id" title="var">In</span> <span class="id" title="var">y</span> <span class="id" title="var">Y</span> -&gt; <span class="id" title="var">ngeq</span> [<span class="id" title="var">X</span>] [<span class="id" title="var">y</span>])) -&gt;<br/>
-&nbsp;((<span class="id" title="tactic">exists</span> <span class="id" title="var">y</span> : <span class="id" title="var">symbol</span>, <span class="id" title="var">In</span> <span class="id" title="var">y</span> <span class="id" title="var">Y</span> /\ (<span class="id" title="var">ngeq</span> [<span class="id" title="var">X</span>] [<span class="id" title="var">y</span>]-&gt;<span class="id" title="var">False</span>))).<br/>
-<span class="id" title="keyword">Proof</span>.<br/>
-<span class="id" title="tactic">intros</span>.<br/>
-<span class="id" title="tactic">apply</span> <span class="id" title="var">not_all_ex_not</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>.<br/>
-<span class="id" title="tactic">unfold</span> <span class="id" title="var">not</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>.<br/>
-<span class="id" title="tactic">elim</span> <span class="id" title="var">H</span>.<br/>
-<span class="id" title="tactic">intros</span>.<br/>
-<span class="id" title="tactic">exists</span> <span class="id" title="var">x</span>.<br/>
-<span class="id" title="tactic">tauto</span>.<br/>
-<span class="id" title="keyword">Qed</span>.<br/>
-
-<br/>
+<div class="doc">
+bad_numbers 
+</div>
+<div class="code">
 <span class="id" title="keyword">Definition</span> <span class="id" title="var">bad_number</span>(<span class="id" title="var">X</span> <span class="id" title="var">Y</span> <span class="id" title="var">Z</span>: <span class="id" title="var">symbol</span>):= (<span class="id" title="var">leq</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> /\ <span class="id" title="var">leq</span> <span class="id" title="var">Y</span> <span class="id" title="var">Z</span> /\ ~<span class="id" title="var">leq</span> <span class="id" title="var">X</span> <span class="id" title="var">Z</span>).<br/>
-
-<br/>
 
 <br/>
 <span class="id" title="keyword">Lemma</span> <span class="id" title="var">bad_numbers</span>: <span class="id" title="keyword">forall</span> (<span class="id" title="var">X</span> <span class="id" title="var">Y</span> <span class="id" title="var">Z</span>: <span class="id" title="var">symbol</span>), <span class="id" title="var">bad_number</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> <span class="id" title="var">Z</span> -&gt;<br/>
@@ -331,12 +278,16 @@ Numbers: Day 2
 &nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">H</span>; <span class="id" title="tactic">destruct</span> <span class="id" title="var">H0</span>;<br/>
 &nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">leq_def</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>; <span class="id" title="tactic">destruct</span> <span class="id" title="var">H</span>;<br/>
 &nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">leq_def</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H0</span>; <span class="id" title="tactic">destruct</span> <span class="id" title="var">H0</span>;<br/>
-&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">not_leq_to_or</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H1</span>; <span class="id" title="tactic">destruct</span> <span class="id" title="var">H1</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">leq_def</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H1</span>;<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">not_and_or</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H1</span>;<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">H1</span>.<br/>
 &nbsp;&nbsp;{<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">left</span>.<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">not_forall_ngeq_l</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H1</span>; <span class="id" title="tactic">auto</span>.<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">not_forall_exists_not_l</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H1</span> ; <span class="id" title="tactic">auto</span>.<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">repeat</span> <span class="id" title="tactic">destruct</span> <span class="id" title="var">H1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">forall_ngeq_l</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">not_all_ex_not</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">H1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">imply_to_and</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">H1</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> <span class="id" title="var">x</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">tauto</span>.<br/>
@@ -346,11 +297,12 @@ Numbers: Day 2
 &nbsp;&nbsp;}<br/>
 &nbsp;&nbsp;{<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">right</span>.<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">not_forall_ngeq_r</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H1</span> ; <span class="id" title="tactic">auto</span>.<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">not_forall_exists_not_r</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H1</span> ; <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">forall_ngeq_r</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">not_all_ex_not</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H1</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">elim</span> <span class="id" title="var">H1</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">z</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">imply_to_and</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H4</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">H4</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> <span class="id" title="var">z</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span>.<br/>
@@ -362,6 +314,14 @@ Numbers: Day 2
 <span class="id" title="keyword">Qed</span>.<br/>
 
 <br/>
+
+<br/>
+</div>
+
+<div class="doc">
+day of creation 
+</div>
+<div class="code">
 
 <br/>
 <span class="id" title="keyword">Fixpoint</span> <span class="id" title="var">D</span> (<span class="id" title="var">s</span>:<span class="id" title="var">symbol</span>) (<span class="id" title="var">n</span>:<span class="id" title="var">nat</span>): <span class="id" title="var">nat</span> := 1 + <span class="id" title="var">max</span> <span class="id" title="var">n</span> (<span class="id" title="var">max</span> (<span class="id" title="var">fold_right</span> (<span class="id" title="var">D</span>) 0 (<span class="id" title="tactic">left</span> <span class="id" title="var">s</span>)) (<span class="id" title="var">fold_right</span> (<span class="id" title="var">D</span>) 0 (<span class="id" title="tactic">right</span> <span class="id" title="var">s</span>))).<br/>

@@ -101,7 +101,7 @@ apply leq_def in H; destruct H; apply (leq_n n0 n0); [eauto | apply leq_Zero_Zer
 
 (** * Chapter 4: Bad Numbers *)
 
-(* Dia N *)
+(** Numbers: Day 3 *)
 Definition na := ([n_1],[]).
 Definition nb := ([n0],[]).
 Definition nc := ([n1],[]).
@@ -203,44 +203,8 @@ apply H; apply in_eq.
 Qed.
 *)
 
-
-(* ----------------- Lemas auxiliares -----------------*)
-Lemma not_leq_to_or: forall (X Y: symbol), (leq X Y -> False) -> ((ngeq (left X) [Y]-> False) \/ (ngeq [X] (right Y) ->False)).
-Proof.
-intros.
-elim (classic ((ngeq (left X) [Y] /\ ngeq [X] (right Y)))) ; [ intros ; apply leq_def in H0 |] ; tauto.
-Qed.
-
-Lemma not_forall_exists_not_l: forall (x Y: symbol),forall (X: list symbol),
- ((~ forall x : symbol, In x X -> ngeq [x] [Y])) ->
- ((exists x : symbol, In x X /\ (ngeq [x] [Y]->False))).
-Proof.
-intros.
-apply not_all_ex_not in H.
-unfold not in H.
-elim H.
-intros.
-exists x0.
-tauto.
-Qed.
-
-Lemma not_forall_exists_not_r: forall (y X: symbol),forall (Y: list symbol),
- ((~ forall y : symbol, In y Y -> ngeq [X] [y])) ->
- ((exists y : symbol, In y Y /\ (ngeq [X] [y]->False))).
-Proof.
-intros.
-apply not_all_ex_not in H.
-unfold not in H.
-elim H.
-intros.
-exists x.
-tauto.
-Qed.
-
-
+(** bad_numbers *)
 Definition bad_number(X Y Z: symbol):= (leq X Y /\ leq Y Z /\ ~leq X Z).
-
-(* ----------------- Lemas auxiliares -----------------*)
 
 Lemma bad_numbers: forall (X Y Z: symbol), bad_number X Y Z ->
  (exists x : symbol, In x (left X) /\ bad_number Y Z x) \/
@@ -252,12 +216,16 @@ Proof.
   destruct H; destruct H0;
   apply leq_def in H; destruct H;
   apply leq_def in H0; destruct H0;
-  apply not_leq_to_or in H1; destruct H1.
+  rewrite <- leq_def in H1;
+  apply not_and_or in H1;
+  destruct H1.
   {
     left.
     rewrite forall_ngeq_l in H1.
-    apply not_forall_exists_not_l in H1 ; auto.
-    repeat destruct H1.
+    apply not_all_ex_not in H1.
+    destruct H1.
+    apply imply_to_and in H1.
+    destruct H1.
     exists x.
     split.
     tauto.
@@ -268,10 +236,11 @@ Proof.
   {
     right.
     rewrite forall_ngeq_r in H1.
-    apply not_forall_exists_not_r in H1 ; auto.
+    apply not_all_ex_not in H1.
     elim H1.
     intros z.
     intros.
+    apply imply_to_and in H4.
     destruct H4.
     exists z.
     split.
@@ -283,6 +252,8 @@ Proof.
 Qed.
 
 (**Mas numeros **)
+
+(** day of creation *)
 
 Fixpoint D (s:symbol) (n:nat): nat := 1 + max n (max (fold_right (D) 0 (left s)) (fold_right (D) 0 (right s))).
 
