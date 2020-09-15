@@ -211,21 +211,6 @@ intros.
 elim (classic ((ngeq (left X) [Y] /\ ngeq [X] (right Y)))) ; [ intros ; apply leq_def in H0 |] ; tauto.
 Qed.
 
-(* No encuentro este teorema en mi libreria *)
-Theorem not_iff_compat : forall A B : Prop,
-  (A <-> B) -> (~ A <-> ~B).
-Proof.
-tauto.
-Qed.
-
-Lemma not_forall_ngeq_l: forall (x Y: symbol),forall (X: list symbol), (~ ngeq X [Y]) <->  ((~ forall x : symbol, (In x X -> ngeq [x] [Y]))).
-Proof.
-intros.
-apply not_iff_compat.
-apply forall_ngeq_l.
-Qed.
-
-
 Lemma not_forall_exists_not_l: forall (x Y: symbol),forall (X: list symbol),
  ((~ forall x : symbol, In x X -> ngeq [x] [Y])) ->
  ((exists x : symbol, In x X /\ (ngeq [x] [Y]->False))).
@@ -238,14 +223,6 @@ intros.
 exists x0.
 tauto.
 Qed.
-
-Lemma not_forall_ngeq_r: forall (y X: symbol),forall (Y: list symbol), (~ ngeq [X] Y) <->  ((~ forall y : symbol, (In y Y -> ngeq [X] [y]))).
-Proof.
-intros.
-apply not_iff_compat.
-apply forall_ngeq_r.
-Qed.
-
 
 Lemma not_forall_exists_not_r: forall (y X: symbol),forall (Y: list symbol),
  ((~ forall y : symbol, In y Y -> ngeq [X] [y])) ->
@@ -278,7 +255,7 @@ Proof.
   apply not_leq_to_or in H1; destruct H1.
   {
     left.
-    apply not_forall_ngeq_l in H1; auto.
+    rewrite forall_ngeq_l in H1.
     apply not_forall_exists_not_l in H1 ; auto.
     repeat destruct H1.
     exists x.
@@ -290,7 +267,7 @@ Proof.
   }
   {
     right.
-    apply not_forall_ngeq_r in H1 ; auto.
+    rewrite forall_ngeq_r in H1.
     apply not_forall_exists_not_r in H1 ; auto.
     elim H1.
     intros z.
