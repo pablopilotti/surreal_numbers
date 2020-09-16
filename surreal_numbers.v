@@ -203,7 +203,7 @@ apply H; apply in_eq.
 Qed.
 *)
 
-(** bad_numbers *)
+
 Definition bad_number(X Y Z: symbol):= (leq X Y /\ leq Y Z /\ ~leq X Z).
 
 Lemma bad_numbers: forall (X Y Z: symbol), bad_number X Y Z ->
@@ -259,60 +259,28 @@ Fixpoint D (s:symbol) (n:nat): nat := 1 + max n (max (fold_right (D) 0 (left s))
 
 Definition Dx (l: list symbol) : nat := fold_right (D) 0 l.
 
-
-Lemma one_number_lower_limit: forall (X: symbol)(n :nat), D X n >=1.
-Proof.
-induction X; induction l; induction l0; induction n; simpl; lia.
-Qed.
-
-Lemma three_numbers_lower_limit: forall (X Y Z: symbol), D X 0 + D Y 0 + D Z 0 >=3.
-Proof.
-intros.
-elim (one_number_lower_limit X); [elim (one_number_lower_limit Y); [elim (one_number_lower_limit Z) | ] | ]; lia.
-Qed.
-
-
-Lemma aux: forall (X: symbol) (n :nat), D X n = max (S n) (D X 0).
-Proof.
-intros; induction X; induction l; induction l0; simpl; lia.
-Qed.
-
-Lemma aux3: forall (X: symbol), D X 0 = max (S(Dx (left X))) (S(Dx (right X))).
-Proof.
-intros; induction X; induction l; induction l0; tauto.
-Qed.
-
-Lemma aux4: forall (X: symbol) (n :nat), D X n = ( max (S(n)) ((( max (S(Dx (left X))) (S(Dx (right X))))))).
+Lemma D_eq: forall (X: symbol) (n :nat), D X n = (S( max n ( max (Dx (left X)) (Dx (right X))))).
 Proof.
 intros; induction X; induction l; induction l0; induction n; unfold left; unfold right; simpl; tauto.
 Qed.
 
-Lemma aux5: forall (X: symbol) (n :nat), D X n >= D X 0.
+Lemma D_ineq: forall (X: symbol) (n :nat), D X n >= D X 0.
 Proof.
-intros; induction n.
-elim one_number_lower_limit; auto.
-rewrite aux4; rewrite aux3; lia.
+intros; induction n; repeat rewrite D_eq; lia.
 Qed.
 
-Lemma aux6: forall (X: symbol) (n :nat), (D X n) = (S( max n ( max (Dx (left X)) (Dx (right X))))).
+Lemma left_g: forall (X x: symbol), In x (left X) -> D X 0 > D x 0.
 Proof.
-intros; induction X; induction l; induction l0; induction n; unfold left; unfold right; simpl; tauto.
+intros; induction X; induction l; elim H; intros.
+rewrite H0; rewrite D_eq; simpl; elim D_ineq; intros; lia.
+apply IHl in H0; rewrite D_eq; simpl; rewrite D_eq; rewrite D_eq in H0; simpl in H0; lia.
 Qed.
 
-Lemma auxn_l: forall (X x: symbol), In x (left X) -> D X 0 > D x 0.
+Lemma right_g: forall (X x: symbol), In x (right X) -> D X 0 > D x 0.
 Proof.
-intros; induction X; unfold left in H.
-induction l; elim H; intros.
-rewrite H0; rewrite aux4; unfold left; simpl; elim aux5; intros; lia.
-apply IHl in H0; rewrite aux6; unfold right; unfold left; simpl; rewrite aux; rewrite aux6 in H0; simpl in H0; lia.
-Qed.
-
-Lemma auxn_r: forall (X x: symbol), In x (right X) -> D X 0 > D x 0.
-Proof.
-intros; induction X; unfold right in H.
-induction l0; elim H; intros.
-rewrite H0; rewrite aux4; unfold left; simpl; elim aux5; intros; lia.
-apply IHl0 in H0; rewrite aux6; unfold right; unfold left; simpl; rewrite aux; rewrite aux6 in H0; simpl in H0; lia.
+intros; induction X; induction l0; elim H; intros.
+rewrite H0; rewrite D_eq; simpl; elim D_ineq; intros; lia.
+apply IHl0 in H0; rewrite D_eq; simpl; rewrite D_eq; rewrite D_eq in H0; simpl in H0; lia.
 Qed.
 
 
@@ -322,27 +290,21 @@ Lemma bad_numbers_dec: forall (X Y Z: symbol) (n :nat), bad_number X Y Z -> D X 
 Proof.
 intros; apply bad_numbers in H.
 repeat destruct H.
-left; exists x; split; eauto; split; eauto; apply auxn_l in H; lia.
-right; exists x; split; eauto; split; eauto; apply auxn_r in H; lia.
+left; exists x; split; eauto; split; eauto; apply left_g in H; lia.
+right; exists x; split; eauto; split; eauto; apply right_g in H; lia.
 Qed.
 
 
-Lemma ex_leq_trans: 
-forall (n: nat) (X Y Z: symbol), bad_number X Y Z -> D X 0 + D Y 0 + D Z 0 < n -> False. 
+Lemma bad_numbers_do_not_exists: forall (n: nat) (X Y Z: symbol), bad_number X Y Z -> D X 0 + D Y 0 + D Z 0 < n -> False. 
 Proof.
-intro; induction n; lia||auto; intros; apply (bad_numbers_dec X Y Z (D X 0 + D Y 0 + D Z 0)) in H; auto; 
-repeat destruct H; destruct H1; [apply (IHn Y Z x ) | apply (IHn x X Y) ]; lia||auto. 
+intro; induction n; lia || auto; intros; apply (bad_numbers_dec X Y Z (D X 0 + D Y 0 + D Z 0)) in H; auto; 
+repeat destruct H; destruct H1; [apply (IHn Y Z x ) | apply (IHn x X Y) ]; lia||auto.
 Qed.
 
-Lemma leq_trans: 
-forall (X Y Z: symbol), leq X Y -> leq Y Z -> leq X Z.
+(** leq transitivity *)
+Lemma leq_trans: forall (X Y Z: symbol), leq X Y -> leq Y Z -> leq X Z.
 Proof.
-intros.
-elim (classic (X _<=_ Z)); eauto.
-intros.
-cut (False); tauto || auto.
-apply (ex_leq_trans ( S (D X 0 + D Y 0 + D Z 0)) X Y Z).
-unfold bad_number; auto.
-lia.
+intros; elim (classic (X _<=_ Z)); eauto; intros; cut (False); tauto || auto.
+apply (bad_numbers_do_not_exists ( S (D X 0 + D Y 0 + D Z 0)) X Y Z); [ unfold bad_number| ]; auto.
 Qed.
 
