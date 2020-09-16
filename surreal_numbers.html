@@ -384,6 +384,31 @@ leq transitivity
 
 <br/>
 </div>
+
+<div class="doc">
+<a id="lab5"></a><h1 class="section">Chapter 5: Progress</h1>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">bad_numbers_leq_dec</span>: <span class="id" title="keyword">forall</span> (<span class="id" title="var">X</span> <span class="id" title="var">Y</span>: <span class="id" title="var">symbol</span>), (<span class="id" title="var">leq</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> -&gt; <span class="id" title="var">False</span>) -&gt; <span class="id" title="var">leq</span> <span class="id" title="var">Y</span> <span class="id" title="var">X</span> -&gt; <br/>
+((<span class="id" title="tactic">exists</span> <span class="id" title="var">x</span>: <span class="id" title="var">symbol</span>, <span class="id" title="var">In</span> <span class="id" title="var">x</span> (<span class="id" title="tactic">left</span> <span class="id" title="var">X</span>) /\ <span class="id" title="var">leq</span> <span class="id" title="var">Y</span> <span class="id" title="var">x</span>) \/<br/>
+&nbsp;(<span class="id" title="tactic">exists</span> <span class="id" title="var">y</span>: <span class="id" title="var">symbol</span>, <span class="id" title="var">In</span> <span class="id" title="var">y</span> (<span class="id" title="tactic">right</span> <span class="id" title="var">Y</span>) /\ <span class="id" title="var">leq</span> <span class="id" title="var">y</span> <span class="id" title="var">X</span>)).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">intros</span>; <span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">leq_def</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>;<span class="id" title="tactic">apply</span> <span class="id" title="var">not_and_or</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>;<br/>
+<span class="id" title="tactic">destruct</span> <span class="id" title="var">H</span>; [ <span class="id" title="tactic">rewrite</span> <span class="id" title="var">forall_ngeq_l</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span> | <span class="id" title="tactic">rewrite</span> <span class="id" title="var">forall_ngeq_r</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>];<br/>
+<span class="id" title="tactic">apply</span> <span class="id" title="var">not_all_ex_not</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>;<br/>
+<span class="id" title="tactic">destruct</span> <span class="id" title="var">H</span>;<br/>
+<span class="id" title="tactic">apply</span> <span class="id" title="var">imply_to_and</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>;<br/>
+<span class="id" title="tactic">destruct</span> <span class="id" title="var">H</span>;<br/>
+[ <span class="id" title="tactic">left</span> | <span class="id" title="tactic">right</span> ];<br/>
+<span class="id" title="tactic">exists</span> <span class="id" title="var">x</span>;<br/>
+<span class="id" title="tactic">split</span>; <br/>
+[ | <span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">ngeq_n</span> <span class="id" title="var">Y</span> <span class="id" title="var">x</span>) <span class="id" title="tactic">in</span> <span class="id" title="var">H1</span> | | <span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">ngeq_n</span> <span class="id" title="var">x</span> <span class="id" title="var">X</span>) <span class="id" title="tactic">in</span> <span class="id" title="var">H1</span> ];<br/>
+<span class="id" title="tactic">eauto</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+</div>
 </div>
 
 <div id="footer">

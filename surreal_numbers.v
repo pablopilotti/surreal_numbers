@@ -308,3 +308,21 @@ intros; elim (classic (X _<=_ Z)); eauto; intros; cut (False); tauto || auto.
 apply (bad_numbers_do_not_exists ( S (D X 0 + D Y 0 + D Z 0)) X Y Z); [ unfold bad_number| ]; auto.
 Qed.
 
+(** * Chapter 5: Progress *)
+
+Lemma bad_numbers_leq_dec: forall (X Y: symbol), (leq X Y -> False) -> leq Y X -> 
+((exists x: symbol, In x (left X) /\ leq Y x) \/
+ (exists y: symbol, In y (right Y) /\ leq y X)).
+Proof.
+intros; rewrite <- leq_def in H;apply not_and_or in H;
+destruct H; [ rewrite forall_ngeq_l in H | rewrite forall_ngeq_r in H];
+apply not_all_ex_not in H;
+destruct H;
+apply imply_to_and in H;
+destruct H;
+[ left | right ];
+exists x;
+split; 
+[ | rewrite <- (ngeq_n Y x) in H1 | | rewrite <- (ngeq_n x X) in H1 ];
+eauto.
+Qed.
