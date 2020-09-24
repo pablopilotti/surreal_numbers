@@ -310,7 +310,7 @@ Qed.
 
 (** * Chapter 5: Progress *)
 
-Lemma bad_numbers_leq_dec: forall (X Y: symbol), (leq X Y -> False) -> leq Y X -> 
+Lemma bad_numbers_leq_dec: forall (X Y: symbol), (leq X Y -> False) -> 
 ((exists x: symbol, In x (left X) /\ leq Y x) \/
  (exists y: symbol, In y (right Y) /\ leq y X)).
 Proof.
@@ -323,6 +323,76 @@ destruct H;
 [ left | right ];
 exists x;
 split; 
-[ | rewrite <- (ngeq_n Y x) in H1 | | rewrite <- (ngeq_n x X) in H1 ];
+[ | rewrite <- (ngeq_n Y x) in H0 | | rewrite <- (ngeq_n x X) in H0 ];
 eauto.
+Qed.
+
+Lemma aux: 
+(forall X x: symbol , In x (left X) -> leq x X) -> 
+(forall X x: symbol , In x (right X) -> leq X x) -> 
+
+(forall (X Y: symbol), (leq X Y -> False) -> leq Y X).
+Proof.
+intros.
+intros; elim (classic (leq Y X)); eauto; intros; cut (False); tauto || auto.
+destruct (bad_numbers_leq_dec X Y);eauto.
+repeat destruct H3.
+apply (H X x) in H3.
+apply (leq_trans Y x X) in H4; tauto.
+repeat destruct H3.
+apply (H0 Y x) in H3.
+apply (leq_trans Y x X) in H3; tauto.
+Qed.
+
+Axiom is_number_l: forall (X: symbol), is_number X -> forall (y: symbol), In y (left X) -> is_number y.
+Axiom is_number_r: forall (X: symbol), is_number X -> forall (y: symbol), In y (right X) -> is_number y.
+
+Lemma T2: (forall Y: symbol, leq Y Y) -> forall (n: nat) (X: symbol), D X 0 < n -> ( forall (xl: symbol), is_number X -> In xl (left X) -> leq xl X).
+Proof.
+intro P.
+intros n.
+induction n.
+lia.
+intros X N xl H H0.
+apply leq_def.
+split.
+2:{
+unfold is_number in H.
+induction (left X).
+elim H0.
+rewrite forall_ngeq_l in H.
+eauto.
+}
+1: {
+elim (classic ( ngeq (left xl) [X])); eauto; intros; cut (False); tauto || auto.
+rewrite forall_ngeq_l in H1.
+apply not_all_ex_not in H1.
+destruct H1 as [xll].
+destruct H1.
+intros.
+rewrite leq_n.
+intros.
+cut (xll _<=_ xl).
+2:{
+apply IHn;auto.
+apply left_g in H0.
+lia.
+apply (is_number_l X); auto.
+}
+1:{
+intros.
+cut (X _<=_ xl).
+2:{
+apply (leq_trans X xll xl);auto.
+}
+intros.
+rewrite <- leq_def in H4.
+destruct H4.
+rewrite forall_ngeq_l in H4.
+apply (H4 xl) in H0.
+rewrite leq_n in H0.
+apply H0.
+apply (P xl).
+}
+}
 Qed.
