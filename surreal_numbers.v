@@ -347,52 +347,77 @@ Qed.
 Axiom is_number_l: forall (X: symbol), is_number X -> forall (y: symbol), In y (left X) -> is_number y.
 Axiom is_number_r: forall (X: symbol), is_number X -> forall (y: symbol), In y (right X) -> is_number y.
 
-Lemma T2: (forall Y: symbol, leq Y Y) -> forall (n: nat) (X: symbol), D X 0 < n -> ( forall (xl: symbol), is_number X -> In xl (left X) -> leq xl X).
+Lemma pre_T3: forall (n: nat) (X: symbol), D X 0 < n -> is_number X -> leq X X.
 Proof.
-intro P.
-intros n.
-induction n.
+intro n;induction n.
+intros;lia.
+intros;rewrite <- leq_def;split;
+[rewrite forall_ngeq_l | rewrite forall_ngeq_r];
+intros x H1; rewrite leq_n; intros;
+cut (D x 0 < n); [ |apply left_g in H1;lia | |apply right_g in H1;lia ];
+intros; rewrite <- leq_def in H2; destruct H2; pose proof H1;
+[rewrite forall_ngeq_l in H2; apply (H2 x) in H1 | rewrite forall_ngeq_r in H4; apply (H4 x) in H1 ];
+rewrite leq_n in H1; apply H1; apply (IHn x);auto;
+[apply (is_number_l X) | apply (is_number_r X)]; auto.
+Qed.
+
+Lemma T3: forall (X: symbol), is_number X-> leq X X.
+Proof.
+intro; apply (pre_T3 (S (D X 0))); auto.
+Qed.
+
+Lemma pre_T2_l: forall (n: nat) (X: symbol), D X 0 < n -> forall (xl: symbol), is_number X -> In xl (left X) -> leq xl X.
+Proof.
+intros n; induction n.
 lia.
-intros X N xl H H0.
-apply leq_def.
-split.
-2:{
-unfold is_number in H.
-induction (left X).
-elim H0.
-rewrite forall_ngeq_l in H.
-eauto.
-}
-1: {
-elim (classic ( ngeq (left xl) [X])); eauto; intros; cut (False); tauto || auto.
-rewrite forall_ngeq_l in H1.
-apply not_all_ex_not in H1.
-destruct H1 as [xll].
-destruct H1.
-intros.
-rewrite leq_n.
-intros.
-cut (xll _<=_ xl).
-2:{
-apply IHn;auto.
-apply left_g in H0.
-lia.
-apply (is_number_l X); auto.
-}
+intros X N xl H H0; apply leq_def; split.
+2:{ unfold is_number in H; induction (left X); elim H0; rewrite forall_ngeq_l in H; eauto.
+  }
 1:{
-intros.
-cut (X _<=_ xl).
-2:{
-apply (leq_trans X xll xl);auto.
+ elim (classic ( ngeq (left xl) [X])); eauto; intros; cut (False); tauto || auto;
+ rewrite forall_ngeq_l in H1; apply not_all_ex_not in H1; destruct H1 as [xll];
+ destruct H1; intros; rewrite leq_n; intros;
+ cut (xll _<=_ xl).
+ 2:{ apply IHn;auto; [ apply left_g in H0;lia | apply (is_number_l X); auto].
+    }
+ 1:{ intros; 
+     cut (X _<=_ xl). 2:{ apply (leq_trans X xll xl);auto. }
+     cut (is_number xl). 2:{ apply (is_number_l X); auto. }
+     intros; rewrite <- leq_def in H5; destruct H5; rewrite forall_ngeq_l in H5;
+     apply (H5 xl) in H0; rewrite leq_n in H0; apply H0;apply (T3 xl); auto.
+   }
 }
-intros.
-rewrite <- leq_def in H4.
-destruct H4.
-rewrite forall_ngeq_l in H4.
-apply (H4 xl) in H0.
-rewrite leq_n in H0.
-apply H0.
-apply (P xl).
-}
-}
+Qed.
+
+Lemma T2_l: forall (X xl: symbol), is_number X -> In xl (left X) -> leq xl X.
+Proof.
+intros X xl.
+apply (pre_T2_l (S (D X 0))); auto.
+Qed.
+
+Lemma pre_T2_r: forall (n: nat) (X: symbol), D X 0 < n -> forall (xr: symbol), is_number X -> In xr (right X) -> leq X xr.
+Proof.
+intros n; induction n.
+lia.
+intros X N xr H H0; apply leq_def; split.
+unfold is_number in H; induction (right X); [elim H0| rewrite forall_ngeq_r in H; auto].
+
+elim (classic ( ngeq [X] (right xr))); eauto; intros; cut (False); tauto || auto.
+ rewrite forall_ngeq_r in H1; apply not_all_ex_not in H1; destruct H1 as [xrr].
+ destruct H1; intros; rewrite leq_n; intros;
+ cut (xr _<=_ xrr).
+ 2:{ apply IHn; auto; [ apply right_g in H0;lia | apply (is_number_r X); auto].
+    }
+ 1:{ intros; 
+     cut (xr _<=_ X). 2:{ apply (leq_trans xr xrr X);auto. }
+     cut (is_number xr). 2:{ apply (is_number_r X); auto. }
+     intros. rewrite <- leq_def in H5. destruct H5; rewrite forall_ngeq_r in H6;
+     apply (H6 xr) in H0; rewrite leq_n in H0; apply H0; apply (T3 xr); auto.
+   }
+Qed.
+
+Lemma T2_r: forall (X xr: symbol), is_number X -> In xr (right X) -> leq X xr.
+Proof.
+intros X xr.
+apply (pre_T2_r (S (D X 0))); auto.
 Qed.
