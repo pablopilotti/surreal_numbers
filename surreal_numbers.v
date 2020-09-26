@@ -328,9 +328,6 @@ split;
 eauto.
 Qed.
 
-Axiom is_number_l: forall (X: symbol), is_number X -> forall (y: symbol), In y (left X) -> is_number y.
-Axiom is_number_r: forall (X: symbol), is_number X -> forall (y: symbol), In y (right X) -> is_number y.
-
 Lemma pre_T3: forall (n: nat) (X: symbol), D X 0 < n -> leq X X.
 Proof.
 intro n;induction n.
