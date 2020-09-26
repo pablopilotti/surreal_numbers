@@ -58,8 +58,9 @@ end.
 
 (** Rule 1 *)
 Axiom ngeq: list symbol-> list symbol -> Prop.
+Axiom number: forall (x: symbol), ngeq (left x) (right x).
 Definition is_number (x: symbol) := ngeq (left x) (right x).
-Notation "~ ( x _>=_ y )" := (ngeq x y)
+Notation " x _<_ y" := (ngeq x y)
  (at level 60, right associativity).
 Axiom forall_ngeq_r: forall (X Y: list symbol), ngeq X Y <-> forall (y: symbol), In y Y -> ngeq X [y].
 Axiom forall_ngeq_l: forall (X Y: list symbol), ngeq X Y <-> forall (x: symbol), In x X -> ngeq [x] Y.
@@ -94,7 +95,7 @@ Lemma leq_minusOne_One: leq n_1 n1. Proof. apply leq_def. split; [apply forall_n
 
 Axiom leq_n: forall (X: symbol), forall (Y: symbol), ngeq [Y] [X] <-> (leq X Y -> False).
 Axiom ngeq_n: forall (X: symbol), forall (Y: symbol), leq X Y <-> (ngeq [Y] [X] -> False).
-
+Print leq_n.
 Lemma no_leq_Zero_minusOne: leq n0 n_1->False. Proof. intros.
 apply leq_def in H; destruct H; apply (leq_n n0 n0); [eauto | apply leq_Zero_Zero]. Qed.
 
@@ -302,7 +303,7 @@ repeat destruct H; destruct H1; [apply (IHn Y Z x ) | apply (IHn x X Y) ]; lia||
 Qed.
 
 (** leq transitivity *)
-Lemma leq_trans: forall (X Y Z: symbol), leq X Y -> leq Y Z -> leq X Z.
+Lemma T1: forall (X Y Z: symbol), leq X Y -> leq Y Z -> leq X Z.
 Proof.
 intros; elim (classic (X _<=_ Z)); eauto; intros; cut (False); tauto || auto.
 apply (bad_numbers_do_not_exists ( S (D X 0 + D Y 0 + D Z 0)) X Y Z); [ unfold bad_number| ]; auto.
@@ -327,50 +328,35 @@ split;
 eauto.
 Qed.
 
-Lemma aux: 
-(forall X x: symbol , In x (left X) -> leq x X) -> 
-(forall X x: symbol , In x (right X) -> leq X x) -> 
-
-(forall (X Y: symbol), (leq X Y -> False) -> leq Y X).
-Proof.
-intros.
-intros; elim (classic (leq Y X)); eauto; intros; cut (False); tauto || auto.
-destruct (bad_numbers_leq_dec X Y);eauto.
-repeat destruct H3.
-apply (H X x) in H3.
-apply (leq_trans Y x X) in H4; tauto.
-repeat destruct H3.
-apply (H0 Y x) in H3.
-apply (leq_trans Y x X) in H3; tauto.
-Qed.
-
 Axiom is_number_l: forall (X: symbol), is_number X -> forall (y: symbol), In y (left X) -> is_number y.
 Axiom is_number_r: forall (X: symbol), is_number X -> forall (y: symbol), In y (right X) -> is_number y.
 
-Lemma pre_T3: forall (n: nat) (X: symbol), D X 0 < n -> is_number X -> leq X X.
+Lemma pre_T3: forall (n: nat) (X: symbol), D X 0 < n -> leq X X.
 Proof.
 intro n;induction n.
 intros;lia.
-intros;rewrite <- leq_def;split;
+intros X H; pose proof (number X).
+rewrite <- leq_def;split;
 [rewrite forall_ngeq_l | rewrite forall_ngeq_r];
-intros x H1; rewrite leq_n; intros;
+intros x H1; rewrite leq_n; intros H2;
 cut (D x 0 < n); [ |apply left_g in H1;lia | |apply right_g in H1;lia ];
-intros; rewrite <- leq_def in H2; destruct H2; pose proof H1;
+intros H3; rewrite <- leq_def in H2; destruct H2; pose proof H1;
 [rewrite forall_ngeq_l in H2; apply (H2 x) in H1 | rewrite forall_ngeq_r in H4; apply (H4 x) in H1 ];
-rewrite leq_n in H1; apply H1; apply (IHn x);auto;
-[apply (is_number_l X) | apply (is_number_r X)]; auto.
+rewrite leq_n in H1; apply H1; apply (IHn x); auto.
 Qed.
 
-Lemma T3: forall (X: symbol), is_number X-> leq X X.
+Lemma T3: forall (X: symbol), leq X X.
 Proof.
 intro; apply (pre_T3 (S (D X 0))); auto.
 Qed.
 
-Lemma pre_T2_l: forall (n: nat) (X: symbol), D X 0 < n -> forall (xl: symbol), is_number X -> In xl (left X) -> leq xl X.
+Lemma pre_T2_l: forall (n: nat) (X: symbol), D X 0 < n -> forall (xl: symbol), In xl (left X) -> leq xl X.
 Proof.
 intros n; induction n.
 lia.
-intros X N xl H H0; apply leq_def; split.
+intros X N xl.
+pose proof (number X).
+intros H0; apply leq_def; split.
 2:{ unfold is_number in H; induction (left X); elim H0; rewrite forall_ngeq_l in H; eauto.
   }
 1:{
@@ -378,46 +364,76 @@ intros X N xl H H0; apply leq_def; split.
  rewrite forall_ngeq_l in H1; apply not_all_ex_not in H1; destruct H1 as [xll];
  destruct H1; intros; rewrite leq_n; intros;
  cut (xll _<=_ xl).
- 2:{ apply IHn;auto; [ apply left_g in H0;lia | apply (is_number_l X); auto].
+ 2:{ apply IHn; [apply left_g in H0; lia| auto].
     }
  1:{ intros; 
-     cut (X _<=_ xl). 2:{ apply (leq_trans X xll xl);auto. }
-     cut (is_number xl). 2:{ apply (is_number_l X); auto. }
+     cut (X _<=_ xl). 2:{ apply (T1 X xll xl);auto. }
+     pose proof (number xl).
      intros; rewrite <- leq_def in H5; destruct H5; rewrite forall_ngeq_l in H5;
      apply (H5 xl) in H0; rewrite leq_n in H0; apply H0;apply (T3 xl); auto.
    }
 }
 Qed.
 
-Lemma T2_l: forall (X xl: symbol), is_number X -> In xl (left X) -> leq xl X.
+Lemma T2_l: forall (X xl: symbol), In xl (left X) -> leq xl X.
 Proof.
 intros X xl.
 apply (pre_T2_l (S (D X 0))); auto.
 Qed.
 
-Lemma pre_T2_r: forall (n: nat) (X: symbol), D X 0 < n -> forall (xr: symbol), is_number X -> In xr (right X) -> leq X xr.
+Lemma pre_T2_r: forall (n: nat) (X: symbol), D X 0 < n -> forall (xr: symbol), In xr (right X) -> leq X xr.
 Proof.
 intros n; induction n.
 lia.
-intros X N xr H H0; apply leq_def; split.
+intros X N xr.
+pose proof (number X).
+intros H0; apply leq_def; split.
 unfold is_number in H; induction (right X); [elim H0| rewrite forall_ngeq_r in H; auto].
 
 elim (classic ( ngeq [X] (right xr))); eauto; intros; cut (False); tauto || auto.
  rewrite forall_ngeq_r in H1; apply not_all_ex_not in H1; destruct H1 as [xrr].
  destruct H1; intros; rewrite leq_n; intros;
  cut (xr _<=_ xrr).
- 2:{ apply IHn; auto; [ apply right_g in H0;lia | apply (is_number_r X); auto].
+ 2:{ apply IHn; [ apply right_g in H0;lia | auto].
     }
  1:{ intros; 
-     cut (xr _<=_ X). 2:{ apply (leq_trans xr xrr X);auto. }
-     cut (is_number xr). 2:{ apply (is_number_r X); auto. }
+     cut (xr _<=_ X). 2:{ apply (T1 xr xrr X);auto. }
+     pose proof (number xr).
      intros. rewrite <- leq_def in H5. destruct H5; rewrite forall_ngeq_r in H6;
      apply (H6 xr) in H0; rewrite leq_n in H0; apply H0; apply (T3 xr); auto.
    }
 Qed.
 
-Lemma T2_r: forall (X xr: symbol), is_number X -> In xr (right X) -> leq X xr.
+Lemma T2_r: forall (X xr: symbol), In xr (right X) -> leq X xr.
 Proof.
 intros X xr.
 apply (pre_T2_r (S (D X 0))); auto.
 Qed.
+
+Lemma T4: 
+forall (X Y: symbol), (leq X Y -> False) -> leq Y X.
+Proof.
+intros.
+intros; elim (classic (leq Y X)); eauto; intros; cut (False); tauto || auto.
+destruct (bad_numbers_leq_dec X Y);eauto.
+repeat destruct H1.
+apply (T2_l X x) in H1. 
+apply (T1 Y x X) in H2; tauto.
+repeat destruct H1.
+apply (T2_r Y x) in H1.
+apply (T1 Y x X) in H2; tauto.
+Qed.
+
+Lemma T5: 
+forall (X Y Z: symbol), ngeq [X] [Y] -> leq Y Z ->  ngeq [X] [Z].
+Proof.
+intros; rewrite leq_n; rewrite leq_n in H; intros; elim H; apply (T1 Y Z X); auto.
+Qed.
+
+Lemma T6: 
+forall (X Y Z: symbol), leq X Y -> ngeq [Y] [Z] ->  ngeq [X] [Z].
+Proof.
+intros; rewrite leq_n; rewrite leq_n in H0; intros; elim H0; apply (T1 Z X Y); auto.
+Qed.
+
+(** * Chapter 6: The third day *)
