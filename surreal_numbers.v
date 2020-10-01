@@ -174,35 +174,7 @@ split; [apply forall_ngeq_l | apply forall_ngeq_r]; intros.
 }
 Qed.
 
-(*
-Lemma ngeq_l: forall (X Y: list symbol) (x: symbol), ngeq X Y /\ ngeq [x] Y <-> ngeq (x::X) Y.
-Proof.
-split.
-{ 
-intros; destruct H; apply forall_ngeq_l; intros; elim H1.
-intros; rewrite <-H2; tauto.
-apply forall_ngeq_l; tauto.
-} {
-intros; rewrite (forall_ngeq_l (x :: X) Y) in H; split.
-rewrite (forall_ngeq_l X Y); intros; apply H; apply in_cons; eauto.
-apply H; apply in_eq.
-}
-Qed.
 
-Lemma ngeq_r: forall (X Y: list symbol) (y: symbol), ngeq X Y /\ ngeq X [y] <-> ngeq X (y::Y).
-Proof.
-split.
-{ 
-intros; destruct H; apply forall_ngeq_r; intros; elim H1.
-intros; rewrite <-H2; tauto.
-apply forall_ngeq_r; tauto.
-} {
-intros; rewrite (forall_ngeq_r X (y :: Y)) in H; split.
-rewrite (forall_ngeq_r X Y); intros; apply H; apply in_cons; eauto.
-apply H; apply in_eq.
-}
-Qed.
-*)
 
 
 Definition bad_number(X Y Z: symbol):= (leq X Y /\ leq Y Z /\ ~leq X Z).
@@ -434,3 +406,70 @@ intros; rewrite leq_n; rewrite leq_n in H0; intros; elim H0; apply (T1 Z X Y); a
 Qed.
 
 (** * Chapter 6: The third day *)
+
+Lemma ngeq_const_l: forall (X Y: list symbol) (x: symbol), ngeq X Y /\ ngeq [x] Y <-> ngeq (x::X) Y.
+Proof.
+split.
+{ 
+intros; destruct H; apply forall_ngeq_l; intros; elim H1.
+intros; rewrite <-H2; tauto.
+apply forall_ngeq_l; tauto.
+} {
+intros; rewrite (forall_ngeq_l (x :: X) Y) in H; split.
+rewrite (forall_ngeq_l X Y); intros; apply H; apply in_cons; eauto.
+apply H; apply in_eq.
+}
+Qed.
+
+Lemma ngeq_const_r: forall (X Y: list symbol) (y: symbol), ngeq X Y /\ ngeq X [y] <-> ngeq X (y::Y).
+Proof.
+split.
+{ 
+intros; destruct H; apply forall_ngeq_r; intros; elim H1.
+intros; rewrite <-H2; tauto.
+apply forall_ngeq_r; tauto.
+} {
+intros; rewrite (forall_ngeq_r X (y :: Y)) in H; split.
+rewrite (forall_ngeq_r X Y); intros; apply H; apply in_cons; eauto.
+apply H; apply in_eq.
+}
+Qed.
+
+Lemma ngeq_concat_l: forall (X1 X2 Z: list symbol), ngeq X1 Z /\ ngeq X2 Z <-> ngeq (X1++X2) Z.
+Proof.
+split.
+induction X1;intros;repeat destruct H;auto.
+rewrite <- ngeq_const_l in H; repeat destruct H; simpl; rewrite <- ngeq_const_l; auto.
+
+induction X1.
+simpl; intros; rewrite forall_ngeq_l; simpl; tauto.
+simpl; intros; rewrite <- ngeq_const_l in H; repeat destruct H; rewrite <- ngeq_const_l; tauto.
+Qed.
+
+Lemma ngeq_concat_r: forall (X1 X2 Z: list symbol), ngeq Z X1 /\ ngeq Z X2 <-> ngeq Z (X1++X2).
+Proof.
+split.
+induction X1;intros;repeat destruct H;auto.
+rewrite <- ngeq_const_r in H; repeat destruct H; simpl; rewrite <- ngeq_const_r; auto.
+
+induction X1.
+simpl; intros; rewrite forall_ngeq_r; simpl; tauto.
+simpl; intros; rewrite <- ngeq_const_r in H; repeat destruct H; rewrite <- ngeq_const_r; tauto.
+Qed.
+
+
+Definition eqq (X Y: symbol) : Prop := leq X Y /\ leq Y X .
+
+Lemma T7: 
+forall (X Y:symbol),  ngeq (left Y) [X] -> ngeq [X] (right Y) -> eqq X (pair (left X ++ left Y) (right X ++ right Y)).
+Proof.
+intros.
+pose proof (T3 X) as P; apply leq_def in P; destruct P as [P1 P2].
+pose proof (T3 (pair (left X ++ (left Y)) (right X ++ (right Y)))) as Q; apply leq_def in Q; destruct Q as [Q1 Q2]; simpl in Q1, Q2.
+split; rewrite <- leq_def; simpl; split;
+[ rewrite <- ngeq_concat_l in Q1 
+| rewrite <- ngeq_concat_r 
+| rewrite <- ngeq_concat_l 
+| rewrite <- ngeq_concat_r in Q2
+]; tauto.
+Qed.
