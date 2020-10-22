@@ -473,3 +473,46 @@ split; rewrite <- leq_def; simpl; split;
 | rewrite <- ngeq_concat_r in Q2
 ]; tauto.
 Qed.
+
+(** * Chapter 7: Discovery *)
+
+(** * Chapter 8: Addition *)
+
+Program Fixpoint plus (y:symbol) (x:symbol) {struct y}: symbol := 
+match y with
+| pair [] [] => x
+| pair yl yr => let fix plusx (s:symbol) {struct s}: symbol:= 
+                match s with
+                | pair [] [] => y
+                | pair xl xr => let fix plus_set (S: list symbol) (s:symbol) {struct S}: list symbol:= 
+                                match S with
+                                | [] => []
+                                | h :: t => (plus h s) :: (plus_set t s) 
+                                end in
+                                pair (plus_set yl x) (plus_set xr y)
+                end in
+                plusx y
+end.
+
+Print plus.
+Lemma Zero: plus n0 n0 = n0.
+Proof.
+auto.
+Qed.
+
+Lemma P: plus n1 n1 = pair [n1] [].
+Proof.
+auto.
+Qed.
+
+Program Fixpoint minus (x:symbol) : symbol := 
+match x with
+| pair [] [] => x
+| pair l r => pair (map (minus) r) (map (minus) l)
+end.
+
+Lemma P2: minus n_1 = n1 /\ minus n1 = n_1.
+Proof.
+auto.
+Qed.
+
