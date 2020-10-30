@@ -29,6 +29,7 @@
 <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Coq.Structures.GenericMinMax</span>.<br/>
 <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Coq.Program.Tactics</span>.<br/>
 <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Coq.Program.Equality</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Coq.Lists.ListSet</span>.<br/>
 
 <br/>
 </div>
@@ -77,6 +78,13 @@ equal to one. And the evening
 <span class="id" title="keyword">Inductive</span> <span class="id" title="var">symbol</span>: <span class="id" title="keyword">Type</span> :=<br/>
 | <span class="id" title="var">pair</span>: <span class="id" title="var">list</span> <span class="id" title="var">symbol</span> -&gt; <span class="id" title="var">list</span> <span class="id" title="var">symbol</span> -&gt; <span class="id" title="var">symbol</span>.<br/>
 <span class="id" title="keyword">Notation</span> &quot;( x , y )" := (<span class="id" title="var">pair</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Fixpoint</span> <span class="id" title="var">symbol_eq_dec</span> (<span class="id" title="var">t1</span> <span class="id" title="var">t2</span> : <span class="id" title="var">symbol</span>) : {<span class="id" title="var">t1</span> = <span class="id" title="var">t2</span>} + {<span class="id" title="var">t1</span> &lt;&gt; <span class="id" title="var">t2</span>}.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">symbol_list_eq_dec</span> := <span class="id" title="var">list_eq_dec</span> <span class="id" title="var">symbol_eq_dec</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">decide</span> <span class="id" title="var">equality</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
 
 <br/>
 <span class="id" title="keyword">Definition</span> <span class="id" title="tactic">left</span> (<span class="id" title="var">s</span> : <span class="id" title="var">symbol</span>) : <span class="id" title="var">list</span> <span class="id" title="var">symbol</span> :=<br/>
@@ -619,18 +627,18 @@ leq transitivity
 <div class="code">
 
 <br/>
-<span class="id" title="keyword">Program Fixpoint</span> <span class="id" title="var">plus</span> (<span class="id" title="var">y</span>:<span class="id" title="var">symbol</span>) (<span class="id" title="var">x</span>:<span class="id" title="var">symbol</span>) {<span class="id" title="keyword">struct</span> <span class="id" title="var">y</span>}: <span class="id" title="var">symbol</span> := <br/>
+<span class="id" title="keyword">Program Fixpoint</span> <span class="id" title="var">plus</span> (<span class="id" title="var">y</span>:<span class="id" title="var">symbol</span>) (<span class="id" title="var">x</span>:<span class="id" title="var">symbol</span>): <span class="id" title="var">symbol</span> := <br/>
 <span class="id" title="keyword">match</span> <span class="id" title="var">y</span> <span class="id" title="keyword">with</span><br/>
 | <span class="id" title="var">pair</span> [] [] =&gt; <span class="id" title="var">x</span><br/>
-| <span class="id" title="var">pair</span> <span class="id" title="var">yl</span> <span class="id" title="var">yr</span> =&gt; <span class="id" title="keyword">let</span> <span class="id" title="keyword">fix</span> <span class="id" title="var">plusx</span> (<span class="id" title="var">s</span>:<span class="id" title="var">symbol</span>) {<span class="id" title="keyword">struct</span> <span class="id" title="var">s</span>}: <span class="id" title="var">symbol</span>:= <br/>
+| <span class="id" title="var">pair</span> <span class="id" title="var">yl</span> <span class="id" title="var">yr</span> =&gt; <span class="id" title="keyword">let</span> <span class="id" title="keyword">fix</span> <span class="id" title="var">plusx</span> (<span class="id" title="var">s</span>:<span class="id" title="var">symbol</span>): <span class="id" title="var">symbol</span>:= <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">s</span> <span class="id" title="keyword">with</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">pair</span> [] [] =&gt; <span class="id" title="var">y</span><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">pair</span> <span class="id" title="var">xl</span> <span class="id" title="var">xr</span> =&gt; <span class="id" title="keyword">let</span> <span class="id" title="keyword">fix</span> <span class="id" title="var">plus_set</span> (<span class="id" title="var">S</span>: <span class="id" title="var">list</span> <span class="id" title="var">symbol</span>) (<span class="id" title="var">s</span>:<span class="id" title="var">symbol</span>) {<span class="id" title="keyword">struct</span> <span class="id" title="var">S</span>}: <span class="id" title="var">list</span> <span class="id" title="var">symbol</span>:= <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">pair</span> <span class="id" title="var">xl</span> <span class="id" title="var">xr</span> =&gt; <span class="id" title="keyword">let</span> <span class="id" title="keyword">fix</span> <span class="id" title="var">plus_set</span> (<span class="id" title="var">S</span>: <span class="id" title="var">list</span> <span class="id" title="var">symbol</span>) (<span class="id" title="var">s</span>:<span class="id" title="var">symbol</span>): <span class="id" title="var">list</span> <span class="id" title="var">symbol</span>:= <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">S</span> <span class="id" title="keyword">with</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| [] =&gt; []<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">h</span> :: <span class="id" title="var">t</span> =&gt; (<span class="id" title="var">plus</span> <span class="id" title="var">h</span> <span class="id" title="var">s</span>) :: (<span class="id" title="var">plus_set</span> <span class="id" title="var">t</span> <span class="id" title="var">s</span>) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">h</span> :: <span class="id" title="var">t</span> =&gt; <span class="id" title="var">set_add</span> <span class="id" title="var">symbol_eq_dec</span> (<span class="id" title="var">plus</span> <span class="id" title="var">h</span> <span class="id" title="var">s</span>) (<span class="id" title="var">plus_set</span> <span class="id" title="var">t</span> <span class="id" title="var">s</span>) <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span> <span class="id" title="tactic">in</span><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">pair</span> (<span class="id" title="var">plus_set</span> <span class="id" title="var">yl</span> <span class="id" title="var">x</span>) (<span class="id" title="var">plus_set</span> <span class="id" title="var">xr</span> <span class="id" title="var">y</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">pair</span> (<span class="id" title="var">set_union</span> <span class="id" title="var">symbol_eq_dec</span> (<span class="id" title="var">plus_set</span> <span class="id" title="var">yl</span> <span class="id" title="var">x</span>) (<span class="id" title="var">plus_set</span> <span class="id" title="var">xl</span> <span class="id" title="var">y</span>)) (<span class="id" title="var">set_union</span> <span class="id" title="var">symbol_eq_dec</span> (<span class="id" title="var">plus_set</span> <span class="id" title="var">yr</span> <span class="id" title="var">x</span>) (<span class="id" title="var">plus_set</span> <span class="id" title="var">xr</span> <span class="id" title="var">y</span>))<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span> <span class="id" title="tactic">in</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">plusx</span> <span class="id" title="var">y</span><br/>
 <span class="id" title="keyword">end</span>.<br/>
@@ -643,7 +651,13 @@ leq transitivity
 <span class="id" title="keyword">Qed</span>.<br/>
 
 <br/>
-<span class="id" title="keyword">Lemma</span> <span class="id" title="var">P</span>: <span class="id" title="var">plus</span> <span class="id" title="var">n1</span> <span class="id" title="var">n1</span> = <span class="id" title="var">pair</span> [<span class="id" title="var">n1</span>] [].<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">OnePlusOne</span>: <span class="id" title="var">plus</span> <span class="id" title="var">n1</span> <span class="id" title="var">n1</span> = <span class="id" title="var">pair</span> [<span class="id" title="var">n1</span>] [].<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">auto</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">OnePlusOne2</span>: (<span class="id" title="var">plus</span> <span class="id" title="var">n1</span> <span class="id" title="var">n1</span>)  = <span class="id" title="var">nc</span>.<br/>
 <span class="id" title="keyword">Proof</span>.<br/>
 <span class="id" title="tactic">auto</span>.<br/>
 <span class="id" title="keyword">Qed</span>.<br/>

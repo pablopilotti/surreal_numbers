@@ -8,6 +8,7 @@ Require Import Coq.micromega.Lia.
 Require Import Coq.Structures.GenericMinMax.
 Require Import Coq.Program.Tactics.
 Require Import Coq.Program.Equality.
+Require Import Coq.Lists.ListSet.
 
 (** * Chapter 1: The Rock
 ----
@@ -44,6 +45,12 @@ equal to one. And the evening
 Inductive symbol: Type :=
 | pair: list symbol -> list symbol -> symbol.
 Notation "( x , y )" := (pair x y).
+
+Fixpoint symbol_eq_dec (t1 t2 : symbol) : {t1 = t2} + {t1 <> t2}.
+Proof.
+  set (symbol_list_eq_dec := list_eq_dec symbol_eq_dec).
+  decide equality.
+Defined.
 
 Definition left (s : symbol) : list symbol :=
 match s with
@@ -478,18 +485,18 @@ Qed.
 
 (** * Chapter 8: Addition *)
 
-Program Fixpoint plus (y:symbol) (x:symbol) {struct y}: symbol := 
+Program Fixpoint plus (y:symbol) (x:symbol): symbol := 
 match y with
 | pair [] [] => x
-| pair yl yr => let fix plusx (s:symbol) {struct s}: symbol:= 
+| pair yl yr => let fix plusx (s:symbol): symbol:= 
                 match s with
                 | pair [] [] => y
-                | pair xl xr => let fix plus_set (S: list symbol) (s:symbol) {struct S}: list symbol:= 
+                | pair xl xr => let fix plus_set (S: list symbol) (s:symbol): list symbol:= 
                                 match S with
                                 | [] => []
-                                | h :: t => (plus h s) :: (plus_set t s) 
+                                | h :: t => set_add symbol_eq_dec (plus h s) (plus_set t s) 
                                 end in
-                                pair (plus_set yl x) (plus_set xr y)
+                                pair (set_union symbol_eq_dec (plus_set yl x) (plus_set xl y)) (set_union symbol_eq_dec (plus_set yr x) (plus_set xr y))
                 end in
                 plusx y
 end.
@@ -500,7 +507,13 @@ Proof.
 auto.
 Qed.
 
-Lemma P: plus n1 n1 = pair [n1] [].
+Lemma OnePlusOne: plus n1 n1 = pair [n1] [].
+Proof.
+auto.
+Qed.
+
+
+Lemma OnePlusOne2: (plus n1 n1)  = nc.
 Proof.
 auto.
 Qed.
