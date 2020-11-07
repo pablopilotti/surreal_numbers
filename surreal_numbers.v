@@ -112,14 +112,14 @@ apply leq_def in H; destruct H; apply (leq_n n0 n0); [eauto | apply leq_Zero_Zer
 (** Numbers: Day 3 *)
 Definition na := ([n_1],[]).
 Definition nb := ([n0],[]).
-Definition nc := ([n1],[]).
+Definition n2 := ([n1],[]).
 
 Definition nd := (n_1::[n0],[]).
 Definition ne := (n_1::[n1],[]).
 Definition nf := (n0::[n1],[]).
 Definition ng := (n_1::n0::[n1],[]).
 
-Lemma is_num_abcdefg: is_number(na) /\ is_number(nb) /\ is_number(nc) /\ is_number(nd) /\ is_number(ne) /\ is_number(nf) /\ is_number(ng).
+Lemma is_num_abcdefg: is_number(na) /\ is_number(nb) /\ is_number(n2) /\ is_number(nd) /\ is_number(ne) /\ is_number(nf) /\ is_number(ng).
 Proof. 
 repeat split; apply forall_ngeq_r; intros; tauto.
 Qed.
@@ -467,6 +467,23 @@ Qed.
 
 Definition eqq (X Y: symbol) : Prop := leq X Y /\ leq Y X .
 
+Lemma eqq_trans: 
+forall (X Y Z: symbol), eqq X Y -> eqq Y Z -> eqq X Z.
+Proof.
+intros.
+destruct H, H0.
+split.
+apply (T1 X Y Z); auto.
+apply (T1 Z Y X); auto.
+Qed.
+
+Lemma eqq_sim: 
+forall (X Y: symbol), eqq X Y <-> eqq Y X.
+Proof.
+split; intros; destruct H; split; auto.
+Qed.
+
+
 Lemma T7: 
 forall (X Y:symbol),  ngeq (left Y) [X] -> ngeq [X] (right Y) -> eqq X (pair (left X ++ left Y) (right X ++ right Y)).
 Proof.
@@ -512,8 +529,7 @@ Proof.
 auto.
 Qed.
 
-
-Lemma OnePlusOne2: (plus n1 n1)  = nc.
+Lemma OnePlusOne2: (plus n1 n1)  = n2.
 Proof.
 auto.
 Qed.
@@ -524,8 +540,12 @@ match x with
 | pair l r => pair (map (minus) r) (map (minus) l)
 end.
 
-Lemma P2: minus n_1 = n1 /\ minus n1 = n_1.
+Definition subtract (y:symbol) (x:symbol) := plus y (minus x).
+
+(** * Chapter 9: The Answer *)
+
+Lemma T8: forall (y:symbol) (x:symbol), D y 0 > D x 0  -> left y _<_ [x] -> [x] _<_ right y -> eqq x y.
 Proof.
-auto.
-Qed.
+intros y x d H H0.
+pose proof (T7 x y H H0) as T7.
 
